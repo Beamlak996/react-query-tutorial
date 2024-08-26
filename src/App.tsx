@@ -1,10 +1,12 @@
+import { Button } from "./components/ui/button"
 
 
 function App() {
 
   return (
     <div className="text-2xl text-rose-500" >
-      Hello World
+      Hello World 
+      <Button>Click Me</Button>
     </div>
   )
 }
