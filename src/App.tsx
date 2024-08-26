@@ -1,11 +1,11 @@
-import { Todo } from "./components/general/todo";
+import { Todos } from "./components/general/todos";
 
 function App() {
 
 
   return (
     <div>
-      <Todo />
+      <Todos />
     </div>
   )
 }
