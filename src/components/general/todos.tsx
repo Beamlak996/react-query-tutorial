@@ -1,4 +1,4 @@
-import { useCreateTodo } from "@/services/mutations";
+import { useCreateTodo, useUpdateTodo } from "@/services/mutations";
 import { useTodo, useTodosIds } from "@/services/queries";
 import { Todo } from "@/types/todo";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -9,9 +9,10 @@ export const Todos = () => {
   const { isPending, isError, data } = useTodosIds();
   const todoQueries = useTodo(data);
 
-  const createTodoMutation = useCreateTodo();
+  const { mutate, isPending: isCreating } = useCreateTodo();
+  const updateTodoMutation = useUpdateTodo()
 
-  const { register, handleSubmit } = useForm<Todo>();
+  const { register, handleSubmit, reset } = useForm<Todo>();
 
   if (isPending) {
     return <>Loading...</>;
@@ -22,8 +23,15 @@ export const Todos = () => {
   }
 
   const handleCreateTodoSubmit: SubmitHandler<Todo> = (data) => {
-    createTodoMutation.mutate(data)
+        mutate(data, {
+            onSuccess: () => reset(),
+            onError: (error) => console.log(error)
+        });
   };
+
+  const handleMarkAsDoneSubmit: SubmitHandler<Todo> = (data) => {
+    updateTodoMutation.mutate({ ...data, checked: true })
+  } 
 
   return (
     <div className="flex flex-col ml-4">
@@ -36,7 +44,9 @@ export const Todos = () => {
           <Input placeholder="title" {...register("title")} />
           <Input placeholder="description" {...register("description")} />
         </div>
-        <Button type="submit" >Submit</Button>
+        <Button type="submit" disabled={isCreating}>
+          {isCreating ? "Creating..." : "Create"}
+        </Button>
       </form>
 
       <div className="flex flex-col gap-2 ml-2">
@@ -44,6 +54,12 @@ export const Todos = () => {
           <div key={data?.id}>
             <p>Id: {data?.id}</p>
             <p>Title: {data?.title}</p>
+            <div>
+              <Button variant="secondary" type="button" className="" onClick={()=>handleMarkAsDoneSubmit(data!)} disabled={data?.checked} >
+                {}
+                {data?.checked ? "Done" : "Mark as done"}
+              </Button>
+            </div>
           </div>
         ))}
       </div>

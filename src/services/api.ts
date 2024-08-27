@@ -15,3 +15,7 @@ export const getTodo = async (id: number) => {
 export const createTodo = async (data: Todo) => {
     return axiosInstance.post("todos", data)
 }
+
+export const updateTodo = async (data: Todo) => {
+    return axiosInstance.put(`todos/${data.id}`, data)
+}
