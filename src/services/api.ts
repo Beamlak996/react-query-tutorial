@@ -13,9 +13,13 @@ export const getTodo = async (id: number) => {
 }
 
 export const createTodo = async (data: Todo) => {
-    return axiosInstance.post("todos", data)
+    await axiosInstance.post("todos", data)
 }
 
 export const updateTodo = async (data: Todo) => {
-    return axiosInstance.put(`todos/${data.id}`, data)
+    await axiosInstance.put(`todos/${data.id}`, data)
+}
+
+export const deleteTodo = async (id: number) => {
+    await axiosInstance.delete(`todos/${id}`)
 }

@@ -1,43 +1,63 @@
-import { Todo } from "@/types/todo"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createTodo, updateTodo } from "./api"
+import { Todo } from "@/types/todo";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTodo, deleteTodo, updateTodo } from "./api";
 
 export function useCreateTodo() {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (data: Todo) => createTodo(data),
-        onMutate: () => {
-            console.log('mutate')
-        },
-        onError: () => {
-            console.log("error")
-        },
-        onSuccess: () => {
-            console.log('success')
-        },
-        onSettled: async (_, error) => {
-            if(error) {
-                console.log(error)
-            } else {
-                await queryClient.invalidateQueries({ queryKey: ['todos'] })
-            }
-        }
-    })
+  return useMutation({
+    mutationFn: (data: Todo) => createTodo(data),
+    onMutate: () => {
+      console.log("mutate");
+    },
+    onError: () => {
+      console.log("error");
+    },
+    onSuccess: () => {
+      console.log("success");
+    },
+    onSettled: async (_, error) => {
+      if (error) {
+        console.log(error);
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ["todos"] });
+      }
+    },
+  });
 }
 
 export function useUpdateTodo() {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (data: Todo) => updateTodo(data),
-        onSettled: async (_, error, variables) => {
-            if(error) {
-                console.log(error)
-            } else {
-                queryClient.invalidateQueries({queryKey: ['todos']})
-                queryClient.invalidateQueries({ queryKey: ['todo', { id: variables.id }] })
-            }
-        }
-    })
+  return useMutation({
+    mutationFn: (data: Todo) => updateTodo(data),
+    onSettled: async (_, error, variables) => {
+      if (error) {
+        console.log(error);
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ["todos"] });
+        await queryClient.invalidateQueries({
+          queryKey: ["todo", { id: variables.id }],
+        });
+      }
+    },
+  });
+}
+
+export function useDeleteTodo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => deleteTodo(id),
+    onSuccess: () => {
+      console.log("Deleted successfully");
+    },
+    onSettled: async (_, error) => {
+      if (error) {
+        console.log(error);
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ["todos"] });
+      }
+    },
+  });
 }

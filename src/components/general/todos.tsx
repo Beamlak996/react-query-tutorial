@@ -1,4 +1,8 @@
-import { useCreateTodo, useUpdateTodo } from "@/services/mutations";
+import {
+  useCreateTodo,
+  useDeleteTodo,
+  useUpdateTodo,
+} from "@/services/mutations";
 import { useTodo, useTodosIds } from "@/services/queries";
 import { Todo } from "@/types/todo";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -10,7 +14,8 @@ export const Todos = () => {
   const todoQueries = useTodo(data);
 
   const { mutate, isPending: isCreating } = useCreateTodo();
-  const updateTodoMutation = useUpdateTodo()
+  const updateTodoMutation = useUpdateTodo();
+  const deleteTodoMutation = useDeleteTodo();
 
   const { register, handleSubmit, reset } = useForm<Todo>();
 
@@ -23,15 +28,25 @@ export const Todos = () => {
   }
 
   const handleCreateTodoSubmit: SubmitHandler<Todo> = (data) => {
-        mutate(data, {
-            onSuccess: () => reset(),
-            onError: (error) => console.log(error)
-        });
+    mutate(data, {
+      onSuccess: () => reset(),
+      onError: (error) => console.log(error),
+    });
   };
 
   const handleMarkAsDoneSubmit: SubmitHandler<Todo> = (data) => {
-    updateTodoMutation.mutate({ ...data, checked: true })
-  } 
+    updateTodoMutation.mutate({ ...data, checked: true });
+  };
+
+  const handleTodoDeleteSubmit = async (id: number | undefined) => {
+    if (id) {
+      await deleteTodoMutation.mutateAsync(id, {
+        onSuccess: () => {
+            
+        }
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col ml-4">
@@ -55,10 +70,17 @@ export const Todos = () => {
             <p>Id: {data?.id}</p>
             <p>Title: {data?.title}</p>
             <div>
-              <Button variant="secondary" type="button" className="" onClick={()=>handleMarkAsDoneSubmit(data!)} disabled={data?.checked} >
+              <Button
+                variant="secondary"
+                type="button"
+                className=""
+                onClick={() => handleMarkAsDoneSubmit(data!)}
+                disabled={data?.checked}
+              >
                 {}
                 {data?.checked ? "Done" : "Mark as done"}
               </Button>
+              <Button onClick={() => handleTodoDeleteSubmit(data?.id)} variant="destructive">Delete</Button>
             </div>
           </div>
         ))}
