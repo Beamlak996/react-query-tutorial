@@ -8,6 +8,7 @@ import { Todo } from "@/types/todo";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import toast from "react-hot-toast";
 
 export const Todos = () => {
   const { isPending, isError, data } = useTodosIds();
@@ -42,7 +43,7 @@ export const Todos = () => {
     if (id) {
       await deleteTodoMutation.mutateAsync(id, {
         onSuccess: () => {
-            
+            toast.success('Successfully deleted the todo.')
         }
       });
     }
