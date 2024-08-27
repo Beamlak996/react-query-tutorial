@@ -1,5 +1,11 @@
-import { useQuery, useQueries, keepPreviousData } from "@tanstack/react-query";
-import { getProjects, getTodo, getTodosId } from "./api"
+import {
+  useQuery,
+  useQueries,
+  keepPreviousData,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { getProduct, getProducts, getProjects, getTodo, getTodosId } from "./api"
 
 export const useTodosIds = () => {
     return useQuery({
@@ -24,5 +30,35 @@ export function useProjects (page: number) {
         queryKey: ["projects", { page }],
         queryFn: () => getProjects(page),
         placeholderData: keepPreviousData
+    })
+}
+
+export function useProducts() {
+  return useInfiniteQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      if (lastPage.length === 0) {
+        return undefined;
+      }
+      return lastPageParam + 1;
+    },
+    getPreviousPageParam: (_, __, firstPageParam) => {
+      if (firstPageParam <= 1) {
+        return undefined;
+      }
+      return firstPageParam - 1;
+    },
+  });
+}
+
+export function useProduct (id: number | null) {
+    const queryClient = useQueryClient()
+
+    return useQuery({
+        queryKey: ['product', { id }],
+        queryFn: () => getProduct(id!),
+        enabled: !!id
     })
 }

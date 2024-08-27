@@ -1,4 +1,4 @@
-import { Projects } from "./components/general/projects";
+import { Products } from "./components/general/products";
 
 function App() {
 
@@ -6,7 +6,8 @@ function App() {
   return (
     <div>
       {/* <Todos /> */}
-      <Projects />
+      {/* <Projects /> */}
+      <Products />
     </div>
   )
 }
