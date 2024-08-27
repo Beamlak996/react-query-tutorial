@@ -1,4 +1,4 @@
-import { useProducts } from "@/services/queries"
+import { useProduct, useProducts } from "@/services/queries"
 import { Fragment, useState } from "react";
 
 export const Products = () => {
@@ -6,6 +6,7 @@ export const Products = () => {
 
 
     const productsQuery = useProducts()
+    const productQuery = useProduct(selectedProductId)
 
 
     return (
@@ -28,6 +29,8 @@ export const Products = () => {
                 {productsQuery.isFetchingNextPage ? 'Loading more...' : productsQuery.hasNextPage ? 'Load More' : "Nothing more to load"}
             </button>
         </div>
+        <div>Selected product:</div>
+        <div>{JSON.stringify(productQuery.data)}</div>
       </div>
     );
 }
